@@ -39,15 +39,8 @@ class TableGroupServiceTest {
 
     @BeforeEach
     void setUp() {
-        orderTable1 = new OrderTable();
-        orderTable1.setId(1L);
-        orderTable1.setNumberOfGuests(4);
-        orderTable1.setEmpty(true);
-
-        orderTable2 = new OrderTable();
-        orderTable2.setId(2L);
-        orderTable2.setNumberOfGuests(2);
-        orderTable2.setEmpty(true);
+        orderTable1 = new OrderTable(1L, 4, true);
+        orderTable2 = new OrderTable(2L, 2, true);
 
         tableGroup = new TableGroup();
         tableGroup.setId(1L);

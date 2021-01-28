@@ -10,43 +10,60 @@ public class Order {
     private LocalDateTime orderedTime;
     private List<OrderLineItem> orderLineItems;
 
-    public Long getId() {
-        return id;
+    public Order() {
     }
 
-    public void setId(final Long id) {
+    public Order(Long id, List<OrderLineItem> orderLineItem) {
         this.id = id;
+        this.orderLineItems = orderLineItem;
+    }
+
+    public Order(Long id, Long orderTableId, String orderStatus) {
+        this.id = id;
+        this.orderTableId = orderTableId;
+        this.orderStatus = orderStatus;
+    }
+
+    public Order(Long id, Long orderTableId, String orderStatus, LocalDateTime orderedTime) {
+        this.id = id;
+        this.orderTableId = orderTableId;
+        this.orderStatus = orderStatus;
+        this.orderedTime = orderedTime;
+    }
+
+    public void changeOrderLineItems(List<OrderLineItem> orderLineItems) {
+        this.orderLineItems = orderLineItems;
+    }
+
+    public void changeOrderTableId(long orderTableId) {
+        this.orderTableId = orderTableId;
+    }
+
+    public void changeOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public void changeOrderedTime(LocalDateTime orderedTime) {
+        this.orderedTime = orderedTime;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getOrderTableId() {
         return orderTableId;
     }
 
-    public void setOrderTableId(final Long orderTableId) {
-        this.orderTableId = orderTableId;
-    }
-
     public String getOrderStatus() {
         return orderStatus;
-    }
-
-    public void setOrderStatus(final String orderStatus) {
-        this.orderStatus = orderStatus;
     }
 
     public LocalDateTime getOrderedTime() {
         return orderedTime;
     }
 
-    public void setOrderedTime(final LocalDateTime orderedTime) {
-        this.orderedTime = orderedTime;
-    }
-
     public List<OrderLineItem> getOrderLineItems() {
         return orderLineItems;
-    }
-
-    public void setOrderLineItems(final List<OrderLineItem> orderLineItems) {
-        this.orderLineItems = orderLineItems;
     }
 }

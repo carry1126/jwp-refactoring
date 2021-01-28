@@ -32,16 +32,15 @@ class TableGroupRestControllerTest {
     @MockBean
     private TableGroupService tableGroupService;
 
-    private OrderTable orderTable1 = new OrderTable();
-    private OrderTable orderTable2 = new OrderTable();
+    private OrderTable orderTable1;
+    private OrderTable orderTable2;
     private TableGroup tableGroup = new TableGroup();
 
     @BeforeEach
     void setUp() {
-        orderTable1.setId(1L);
-        orderTable1.setTableGroupId(1L);
-        orderTable2.setId(2L);
-        orderTable2.setTableGroupId(1L);
+        orderTable1 = new OrderTable(1L, 1L, 4, true);
+        orderTable1 = new OrderTable(2L, 1L, 2, true);
+
         tableGroup.setId(1L);
         tableGroup.setOrderTables(Arrays.asList(orderTable1, orderTable2));
     }
@@ -62,9 +61,6 @@ class TableGroupRestControllerTest {
     @Test
     @DisplayName("생성된 단체지정 삭제")
     public void givenTableGroup_whenDeleteTableGroup_ReturnStatus() throws Exception{
-        orderTable1.setTableGroupId(null);
-        orderTable2.setTableGroupId(null);
-        tableGroup.setOrderTables(Arrays.asList(orderTable1, orderTable2));
 
         mockMvc.perform(delete("/api/table-groups/{tableGroupId}",1L)
                 .contentType(MediaType.APPLICATION_JSON)

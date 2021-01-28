@@ -80,3 +80,12 @@
 ## Step1
 * 요구사항1 키친포스 요구사항 README.md에 작성
 * 요구사항2 정리한 키친포스 요구 사항을 토대로 테스트 코드 작성(모든 Business Object)
+
+## Step2
+* INSIDE OUT 방식 구현(객체생활체조원칙 준수,setter 사용 x, 테스트하기 쉬운 부분과 어려운 부분(void) 분리) 
+  
+  **DOMAIN DOMAINTEST**
+  
+  **DTO**
+  
+* JPA적용

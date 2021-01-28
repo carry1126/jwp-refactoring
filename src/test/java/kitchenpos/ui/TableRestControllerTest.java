@@ -3,6 +3,7 @@ package kitchenpos.ui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.application.TableService;
 import kitchenpos.domain.OrderTable;
+import kitchenpos.dto.OrderTableResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,14 @@ class TableRestControllerTest {
     @MockBean
     private TableService tableService;
 
+    private OrderTableResponse orderTableResponse;
+
     @Test
     @DisplayName("주문 테이블 생성 확인")
     public void whenPostOrderTable_thenReturnStatus() throws Exception {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setNumberOfGuests(0);
-        orderTable.setEmpty(true);
+        OrderTable orderTable = new OrderTable(1L, 0, true);
 
-        when(tableService.create(any())).thenReturn(orderTable);
+        when(tableService.create(any())).thenReturn(orderTableResponse.of(orderTable));
 
         mockMvc.perform(post("/api/tables")
                 .content(asJsonString(orderTable))
@@ -49,12 +49,9 @@ class TableRestControllerTest {
     @Test
     @DisplayName("생성된 주문테이블 조회")
     public void givenOrderTable_whenGetOrderTable_thenReturnStauts() throws Exception {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setNumberOfGuests(0);
-        orderTable.setEmpty(true);
+        OrderTable orderTable = new OrderTable(1L, 0, true);
 
-        given(tableService.list()).willReturn(Arrays.asList(orderTable));
+        given(tableService.list()).willReturn(Arrays.asList(orderTableResponse.of(orderTable)));
 
         mockMvc.perform(get("/api/tables"))
                 .andExpect(status().isOk())
@@ -64,17 +61,14 @@ class TableRestControllerTest {
     @Test
     @DisplayName("생성된 주문테이블 빈테이블 여부 수정")
     void givenOrderTable_whenPutOrderTable_thenReturnStatus() throws Exception {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setNumberOfGuests(0);
-        orderTable.setEmpty(true);
+        OrderTable orderTable = new OrderTable(1L, 0, true);
 
-        given(tableService.list()).willReturn(Arrays.asList(orderTable));
+        given(tableService.list()).willReturn(Arrays.asList(orderTableResponse.of(orderTable)));
 
         mockMvc.perform(get("/api/tables"))
                 .andExpect(status().isOk());
 
-        orderTable.setEmpty(false);
+        orderTable.changeEmpty(false);
         mockMvc.perform(put("/api/tables/{orderTableId}/empty", orderTable.getId())
                 .content(asJsonString(orderTable))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -86,18 +80,15 @@ class TableRestControllerTest {
     @Test
     @DisplayName("생성된 주문테이블 방문한 손님 수 수정")
     void givenOrderTable_whenPutOrderTableNumberOfGuest_thenReturnStatus() throws Exception {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setNumberOfGuests(0);
-        orderTable.setEmpty(true);
+        OrderTable orderTable = new OrderTable(1L, 0, true);
 
-        given(tableService.list()).willReturn(Arrays.asList(orderTable));
+        given(tableService.list()).willReturn(Arrays.asList(orderTableResponse.of(orderTable)));
 
         mockMvc.perform(get("/api/tables"))
                 .andExpect(status().isOk());
 
-        orderTable.setNumberOfGuests(4);
-        orderTable.setEmpty(false);
+        orderTable.changeNumberOfGuests(4);
+        orderTable.changeEmpty(false);
         mockMvc.perform(put("/api/tables/{orderTableId}/empty", orderTable.getId())
                 .content(asJsonString(orderTable))
                 .contentType(MediaType.APPLICATION_JSON)

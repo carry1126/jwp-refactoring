@@ -1,8 +1,8 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.OrderDao;
-import kitchenpos.dao.OrderTableDao;
+import kitchenpos.domain.OrderRepository;
 import kitchenpos.domain.OrderTable;
+import kitchenpos.domain.OrderTableRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TableServiceTest {
     @Mock
-    private OrderDao orderDao;
+    private OrderRepository orderRepository;
     @Mock
-    private OrderTableDao orderTableDao;
+    private OrderTableRepository orderTableRepository;
 
     @InjectMocks
     private TableService tableService;
@@ -33,15 +33,13 @@ class TableServiceTest {
 
     @BeforeEach
     void setUp() {
-        orderTable = new OrderTable();
-        orderTable.setId(1L);
-        orderTable.setNumberOfGuests(4);
+        orderTable = new OrderTable(1L, 4);
     }
 
     @Test
     @DisplayName("주문테이블 등록")
     void create() {
-        when(orderTableDao.save(any())).thenReturn(orderTable);
+        when(orderTableRepository.save(any())).thenReturn(orderTable);
 
         assertThat(tableService.create(orderTable)).isNotNull();
     }
@@ -49,7 +47,7 @@ class TableServiceTest {
     @Test
     @DisplayName("주문테이블 조회")
     void list() {
-        when(orderTableDao.findAll()).thenReturn(Arrays.asList(orderTable));
+        when(orderTableRepository.findAll()).thenReturn(Arrays.asList(orderTable));
 
         assertThat(tableService.list()).isNotNull();
     }
@@ -57,8 +55,8 @@ class TableServiceTest {
     @Test
     @DisplayName("빈테이블 수정")
     void changeEmpty() {
-        when(orderTableDao.findById(any())).thenReturn(Optional.of(orderTable));
-        when(orderTableDao.save(any())).thenReturn(orderTable);
+        when(orderTableRepository.findById(any())).thenReturn(Optional.of(orderTable));
+        when(orderTableRepository.save(any())).thenReturn(orderTable);
 
         assertThat(tableService.changeEmpty(orderTable.getId(), orderTable)).isNotNull();
     }
@@ -66,8 +64,8 @@ class TableServiceTest {
     @Test
     @DisplayName("빈테이블 수정시 단체지정 되어 있으면 수정 안됨")
     void callExceptionWhenChangeEmpty() {
-        orderTable.setTableGroupId(1l);
-        when(orderTableDao.findById(any())).thenReturn(Optional.of(orderTable));
+        orderTable.changeTableGroupId(1l);
+        when(orderTableRepository.findById(any())).thenReturn(Optional.of(orderTable));
 
         assertThatThrownBy(() -> {
             tableService.changeEmpty(orderTable.getId(), orderTable);
@@ -78,8 +76,8 @@ class TableServiceTest {
     @Test
     @DisplayName("방문한 손님수 수정")
     void changeNumberOfGuests() {
-        when(orderTableDao.findById(any())).thenReturn(Optional.of(orderTable));
-        when(orderTableDao.save(any())).thenReturn(orderTable);
+        when(orderTableRepository.findById(any())).thenReturn(Optional.of(orderTable));
+        when(orderTableRepository.save(any())).thenReturn(orderTable);
 
         assertThat(tableService.changeNumberOfGuests(orderTable.getId(), orderTable));
     }
@@ -87,7 +85,7 @@ class TableServiceTest {
     @Test
     @DisplayName("방문한 손님수 수정시 0명 이하이면 등록 안됨")
     void callExceptionChangeNumberOfGuests1() {
-        orderTable.setNumberOfGuests(-1);
+        orderTable.changeNumberOfGuests(-1);
 
         assertThatThrownBy(() -> {
             tableService.changeNumberOfGuests(orderTable.getId(), orderTable);
@@ -97,7 +95,7 @@ class TableServiceTest {
     @Test
     @DisplayName("방문한 손님수 수정시 주문테이블이 없으면 등록 안됨")
     void callExceptionChangeNumberOfGuests2(){
-        when(orderTableDao.findById(any())).thenReturn(Optional.of(new OrderTable()));
+        when(orderTableRepository.findById(any())).thenReturn(Optional.of(new OrderTable()));
 
         try {
             tableService.changeNumberOfGuests(orderTable.getId(), orderTable);
@@ -109,7 +107,7 @@ class TableServiceTest {
     @Test
     @DisplayName("방문한 손님수 수정시 빈테이블이면 등록 안됨")
     void callExceptionChangeNumberOfGuests3() {
-        orderTable.setEmpty(true);
+        orderTable.changeEmpty(true);
 
         assertThatThrownBy(() -> {
             tableService.changeNumberOfGuests(orderTable.getId(), orderTable);

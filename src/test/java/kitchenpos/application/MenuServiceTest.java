@@ -1,14 +1,6 @@
 package kitchenpos.application;
 
-import kitchenpos.dao.MenuDao;
-import kitchenpos.dao.MenuGroupDao;
-import kitchenpos.dao.MenuProductDao;
-import kitchenpos.dao.ProductDao;
-import kitchenpos.domain.Menu;
-import kitchenpos.domain.MenuGroup;
-import kitchenpos.domain.MenuProduct;
-import kitchenpos.domain.Product;
-import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
+import kitchenpos.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,13 +21,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {
     @Mock
-    private MenuDao menuDao;
+    private MenuRepository menuRepository;
     @Mock
-    private MenuGroupDao menuGroupDao;
+    private MenuGroupRepository menuGroupRepository;
     @Mock
-    private MenuProductDao menuProductDao;
+    private MenuProductRepository menuProductRepository;
     @Mock
-    private ProductDao productDao;
+    private ProductRepository productRepository;
 
     @InjectMocks
     private MenuService menuService;
@@ -46,32 +38,20 @@ class MenuServiceTest {
 
     @BeforeEach
     void setUp() {
-        newProduct = new Product();
-        newProduct.setId(1L);
-        newProduct.setName("강정치킨");
-        newProduct.setPrice(new BigDecimal(17000));
+        newProduct = new Product(1L,"강정치킨", new BigDecimal(17000));
+        menuProduct = new MenuProduct(1L, 1L, 1L, 2);
 
-        menuProduct = new MenuProduct();
-        menuProduct.setSeq(1L);
-        menuProduct.setMenuId(1L);
-        menuProduct.setProductId(1L);
-        menuProduct.setQuantity(2);
-
-        menu = new Menu();
-        menu.setId(1L);
-        menu.setName("후라이드+후라이드");
-        menu.setPrice(new BigDecimal(34000));
-        menu.setMenuGroupId(1L);
-        menu.setMenuProducts(Arrays.asList(menuProduct));
+        menu = new Menu(1L, "후라이드+후라이드", new BigDecimal(34000), 1L);
+        menu.changeMenuProducts(Arrays.asList(menuProduct));
     }
 
     @Test
     @DisplayName("메뉴등록")
     void create() {
-        when(menuGroupDao.existsById(any())).thenReturn(true);
-        when(productDao.findById(any())).thenReturn(Optional.of(newProduct));
-        when(menuDao.save(any())).thenReturn(menu);
-        when(menuProductDao.save(any())).thenReturn(menuProduct);
+        when(menuGroupRepository.existsById(any())).thenReturn(true);
+        when(productRepository.findById(any())).thenReturn(Optional.of(newProduct));
+        when(menuRepository.save(any())).thenReturn(menu);
+        when(menuProductRepository.save(any())).thenReturn(menuProduct);
 
         assertThat(menuService.create(menu)).isNotNull();
     }
@@ -79,7 +59,7 @@ class MenuServiceTest {
     @Test
     @DisplayName("메뉴등록시 메뉴그룹이 존재하지 않으면 등록 할 수 없음")
     void callExceptionNotMenuGroup() {
-        when(menuGroupDao.existsById(any())).thenReturn(false);
+        when(menuGroupRepository.existsById(any())).thenReturn(false);
 
         assertThatThrownBy(() -> {
             menuService.create(menu);
@@ -89,8 +69,8 @@ class MenuServiceTest {
     @Test
     @DisplayName("메뉴조회")
     void list() {
-        when(menuDao.findAll()).thenReturn(Arrays.asList(menu));
-        when(menuProductDao.findAllByMenuId(any())).thenReturn(Arrays.asList(menuProduct));
+        when(menuRepository.findAll()).thenReturn(Arrays.asList(menu));
+        when(menuProductRepository.findAllByMenuId(any())).thenReturn(Arrays.asList(menuProduct));
 
         assertThat(menuService.list()).isNotNull();
     }

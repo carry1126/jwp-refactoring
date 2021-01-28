@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kitchenpos.application.MenuService;
 import kitchenpos.domain.Menu;
 import kitchenpos.domain.MenuProduct;
+import kitchenpos.dto.MenuResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +31,15 @@ class MenuRestControllerTest {
     @MockBean
     private MenuService menuService;
 
+    private MenuResponse menuResponse;
     @Test
     @DisplayName("메뉴 생성 확인")
     public void whenPostMenu_thenReturnStatus() throws Exception {
+        MenuProduct menuProduct = new MenuProduct(1L, 1L, 1L, 2);
+        Menu menu = new Menu(1L, "후라이드+후라이드", new BigDecimal(34000), 1L);
+        menu.changeMenuProducts(Arrays.asList(menuProduct));
 
-        MenuProduct menuProduct = new MenuProduct();
-        menuProduct.setProductId(1L);
-        menuProduct.setQuantity(2L);
-        Menu menu = new Menu();
-        menu.setId(1L);
-        menu.setName("후라이드+후라이드");
-        menu.setPrice(new BigDecimal(19000));
-        menu.setMenuGroupId(1L);
-        menu.setMenuProducts(Arrays.asList(menuProduct));
-
-        when(menuService.create(any())).thenReturn(menu);
+        when(menuService.create(any())).thenReturn(menuResponse.of(menu));
 
         mockMvc.perform(post("/api/menus")
                 .content(asJsonString(menu))
@@ -57,15 +52,9 @@ class MenuRestControllerTest {
     @Test
     @DisplayName("메뉴 생성 조회")
     public void givenMenu_whenGetMenu_thenReturnStatus() throws Exception {
-        MenuProduct menuProduct = new MenuProduct();
-        menuProduct.setProductId(1L);
-        menuProduct.setQuantity(2L);
-        Menu menu = new Menu();
-        menu.setId(1L);
-        menu.setName("후라이드+후라이드");
-        menu.setPrice(new BigDecimal(19000));
-        menu.setMenuGroupId(1L);
-        menu.setMenuProducts(Arrays.asList(menuProduct));
+        MenuProduct menuProduct = new MenuProduct(1L, 1L, 1L, 2);
+        Menu menu = new Menu(1L, "후라이드+후라이드", new BigDecimal(34000), 1L);
+        menu.changeMenuProducts(Arrays.asList(menuProduct));
 
         given(menuService.list()).willReturn(Arrays.asList(menu));
 
